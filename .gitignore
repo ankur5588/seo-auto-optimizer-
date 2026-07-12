@@ -1,0 +1,9 @@
+node_modules/
+.env
+dist/
+data/rankings/
+data/analysis/
+data/audits/
+data/changes/
+data/generated-posts/
+reports/daily/
