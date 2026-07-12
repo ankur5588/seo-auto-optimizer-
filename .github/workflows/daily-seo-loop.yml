@@ -92,7 +92,7 @@ jobs:
       - name: ⎔ Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
           cache-dependency-path: package-lock.json
 
@@ -264,7 +264,7 @@ jobs:
           echo "    Blog generator  : ${{ steps.optimize-blog.outcome }}"
           echo ""
           echo "  PUBLISH"
-          echo "    Netlify deploy  : ${{ steps.publish-deploy.outcome }}"
+          echo "    AWS deploy      : ${{ steps.publish-deploy.outcome }}"
           echo "    Report          : ${{ steps.publish-report.outcome }}"
           echo ""
           echo "  Commit            : ${{ steps.commit.outputs.committed }}"

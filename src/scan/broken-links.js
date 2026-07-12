@@ -346,8 +346,8 @@ export async function scanBrokenLinks() {
   console.log("Broken Links Scanner — Starting");
   console.log("=".repeat(60));
 
-  const siteUrlGtm = process.env.GSC_SITE_URL_GTM;
-  const siteUrlVa = process.env.GSC_SITE_URL_VA;
+  const siteUrlGtm = (process.env.GSC_SITE_URL_GTM || '').replace(/^sc_domain:/, '').replace(/^sc_prefix:/, '');
+  const siteUrlVa = (process.env.GSC_SITE_URL_VA || '').replace(/^sc_domain:/, '').replace(/^sc_prefix:/, '');
 
   if (!siteUrlGtm || !siteUrlVa) {
     console.error("❌ Missing GSC_SITE_URL_GTM or GSC_SITE_URL_VA env vars");
