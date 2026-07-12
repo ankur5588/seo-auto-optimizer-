@@ -1,0 +1,49 @@
+{
+  "name": "seo-auto-optimizer",
+  "version": "1.0.0",
+  "description": "Daily SEO Auto-Optimization Loop – scans, analyzes, optimises, and auto-publishes SEO improvements via GitHub Actions.",
+  "type": "module",
+  "main": "src/index.js",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "scan": "node src/scan/gsc.js && node src/scan/technical.js && node src/scan/broken-links.js",
+    "analyze": "node src/analyze/ranking-delta.js && node src/analyze/content-gap.js && node src/analyze/priority.js",
+    "optimize": "node src/optimize/meta-rewriter.js && node src/optimize/internal-linker.js && node src/optimize/blog-generator.js",
+    "publish": "node src/publish/deploy-netlify.js && node src/publish/report.js",
+    "full-run": "npm run scan && npm run analyze && npm run optimize && npm run publish",
+    "scan:gsc": "node src/scan/gsc.js",
+    "scan:technical": "node src/scan/technical.js",
+    "scan:broken-links": "node src/scan/broken-links.js",
+    "analyze:ranking": "node src/analyze/ranking-delta.js",
+    "analyze:content-gap": "node src/analyze/content-gap.js",
+    "analyze:priority": "node src/analyze/priority.js",
+    "optimize:meta": "node src/optimize/meta-rewriter.js",
+    "optimize:linker": "node src/optimize/internal-linker.js",
+    "optimize:blog": "node src/optimize/blog-generator.js",
+    "publish:deploy": "node src/publish/deploy-netlify.js",
+    "publish:report": "node src/publish/report.js"
+  },
+  "dependencies": {
+    "googleapis": "^140.0.0",
+    "cheerio": "^1.0.0",
+    "fast-xml-parser": "^4.5.0",
+    "js-yaml": "^4.1.0",
+    "netlify-cli": "^17.37.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0"
+  },
+  "keywords": [
+    "seo",
+    "auto-optimization",
+    "search-console",
+    "netlify",
+    "github-actions",
+    "marketing"
+  ],
+  "license": "MIT"
+}

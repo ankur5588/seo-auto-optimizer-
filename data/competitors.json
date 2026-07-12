@@ -1,0 +1,118 @@
+{
+  "gotripmate": [
+    {
+      "name": "GAFFL",
+      "url": "https://gaffl.com",
+      "dr": 44,
+      "keywords": ["travel buddy", "find travel partner", "travel companion", "solo travel app"],
+      "overlap": 8,
+      "strength": "social matching algorithm"
+    },
+    {
+      "name": "Tourlina",
+      "url": "https://tourlina.com",
+      "dr": 38,
+      "keywords": ["female travel buddy", "women travel app", "solo female travel"],
+      "overlap": 5,
+      "strength": "niche female-focused community"
+    },
+    {
+      "name": "Couchsurfing",
+      "url": "https://couchsurfing.com",
+      "dr": 80,
+      "keywords": ["travel community", "meet travelers", "stay with locals", "travel buddy"],
+      "overlap": 10,
+      "strength": "massive community, high DR"
+    },
+    {
+      "name": "Travello",
+      "url": "https://travelloapp.com",
+      "dr": 42,
+      "keywords": ["travel buddy app", "meet travel buddies", "travel social network"],
+      "overlap": 7,
+      "strength": "social feed integration"
+    },
+    {
+      "name": "Backpackr",
+      "url": "https://backpackr.org",
+      "dr": 36,
+      "keywords": ["backpacker app", "travel partner", "buddy finder"],
+      "overlap": 6,
+      "strength": "backpacker-focused features"
+    },
+    {
+      "name": "TripTogether",
+      "url": "https://trip-together.com",
+      "dr": 30,
+      "keywords": ["group travel", "trip buddy", "travel mate"],
+      "overlap": 4,
+      "strength": "group travel planning"
+    },
+    {
+      "name": "Roamance",
+      "url": "https://roamance.com",
+      "dr": 28,
+      "keywords": ["travel friend", "travel partner finder", "meet people while traveling"],
+      "overlap": 5,
+      "strength": "dating-travel hybrid concept"
+    }
+  ],
+  "voyageally": [
+    {
+      "name": "TravelSpend",
+      "url": "https://travelspend.com",
+      "dr": 40,
+      "keywords": ["travel expense tracker", "travel budget app", "trip expense splitter"],
+      "overlap": 6,
+      "strength": "dedicated expense tracking"
+    },
+    {
+      "name": "Polarsteps",
+      "url": "https://polarsteps.com",
+      "dr": 52,
+      "keywords": ["travel tracker", "travel journal", "travel planner", "trip log"],
+      "overlap": 8,
+      "strength": "high DR, auto-tracking"
+    },
+    {
+      "name": "Trail Wallet",
+      "url": "https://trailwallet.net",
+      "dr": 34,
+      "keywords": ["travel expense app", "budget tracker", "spending log"],
+      "overlap": 5,
+      "strength": "simple expense UI"
+    },
+    {
+      "name": "PackPoint",
+      "url": "https://packpoint.com",
+      "dr": 46,
+      "keywords": ["packing list app", "travel checklist", "what to pack"],
+      "overlap": 4,
+      "strength": "weather-based packing suggestions"
+    },
+    {
+      "name": "Maps.Me",
+      "url": "https://maps.me",
+      "dr": 68,
+      "keywords": ["offline maps", "GPS offline", "navigation app", "offline travel"],
+      "overlap": 7,
+      "strength": "very high DR, mature product"
+    },
+    {
+      "name": "Splittr",
+      "url": "https://splittr.com",
+      "dr": 32,
+      "keywords": ["expense splitter", "trip expense", "group travel money"],
+      "overlap": 4,
+      "strength": "group expense focus"
+    },
+    {
+      "name": "TripIt",
+      "url": "https://tripit.com",
+      "dr": 62,
+      "keywords": ["travel organizer", "itinerary app", "trip planner"],
+      "overlap": 6,
+      "strength": "itinerary automation"
+    }
+  ]
+}

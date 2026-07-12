@@ -1,0 +1,268 @@
+# =============================================================================
+# Daily SEO Auto-Optimization Loop
+# -----------------------------------------------------------------------------
+# Runs every day at 6:00 AM UTC.  Can also be triggered manually via
+# workflow_dispatch.  The pipeline has four phases:
+#   1. SCAN    – Pull data from Google Search Console, run technical audits,
+#               and check for broken links.
+#   2. ANALYZE – Compare ranking deltas, identify content gaps, and assign
+#               priority scores to each discovered issue.
+#   3. OPTIMIZE – Rewrite meta tags, improve internal linking, and generate
+#                new blog content based on gap analysis.
+#   4. PUBLISH – Deploy the optimised site to Netlify and generate a
+#               human-readable report.
+#
+# Security: All credentials are stored as GitHub Secrets – never checked in.
+# Error handling: Non-critical steps use continue-on-error so a single
+# failure does not block the rest of the pipeline.
+# =============================================================================
+
+name: Daily SEO Auto-Optimization Loop
+
+on:
+  schedule:
+    # Every day at 06:00 UTC
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      skip_scan:
+        description: "Skip SCAN phase (use cached data)"
+        required: false
+        default: false
+        type: boolean
+      skip_analyze:
+        description: "Skip ANALYZE phase"
+        required: false
+        default: false
+        type: boolean
+      skip_optimize:
+        description: "Skip OPTIMIZE phase"
+        required: false
+        default: false
+        type: boolean
+      skip_publish:
+        description: "Skip PUBLISH phase (dry-run)"
+        required: false
+        default: false
+        type: boolean
+
+# Limit to one concurrent run per branch so we never stack deploys.
+concurrency:
+  group: seo-loop-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write    # needed to commit generated reports / data snapshots
+  pull-requests: read
+
+jobs:
+  seo-optimization-loop:
+    name: SEO Optimization Loop
+    runs-on: ubuntu-latest
+
+    env:
+      # ── Google Search Console ──────────────────────────────────────────
+      GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
+      GSC_PRIVATE_KEY:  ${{ secrets.GSC_PRIVATE_KEY }}
+      GSC_SITE_URL_GTM: ${{ secrets.GSC_SITE_URL_GTM }}
+      GSC_SITE_URL_VA:  ${{ secrets.GSC_SITE_URL_VA }}
+
+      # ── Netlify ────────────────────────────────────────────────────────
+      NETLIFY_AUTH_TOKEN:  ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID_GTM: ${{ secrets.NETLIFY_SITE_ID_GTM }}
+      NETLIFY_SITE_ID_VA:  ${{ secrets.NETLIFY_SITE_ID_VA }}
+
+      TZ: UTC
+
+    steps:
+      # --------------------------------------------------------------------
+      #  Checkout repository with full history so we can diff generated files
+      # --------------------------------------------------------------------
+      - name: ⬇ Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --------------------------------------------------------------------
+      #  Setup Node.js 20 with caching for node_modules
+      # --------------------------------------------------------------------
+      - name: ⎔ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: 📦 Install dependencies
+        run: npm ci
+        env:
+          NODE_ENV: development
+
+      # ====================================================================
+      #  PHASE 1 — SCAN
+      # ====================================================================
+      - name: "🔍 SCAN – Google Search Console data"
+        id: scan-gsc
+        if: ${{ inputs.skip_scan != true }}
+        run: node src/scan/gsc.js
+        continue-on-error: true
+        env:
+          NODE_ENV: production
+
+      - name: "🔍 SCAN – Technical audit"
+        id: scan-technical
+        if: ${{ inputs.skip_scan != true }}
+        run: node src/scan/technical.js
+        continue-on-error: true
+        env:
+          NODE_ENV: production
+
+      - name: "🔍 SCAN – Broken links"
+        id: scan-broken-links
+        if: ${{ inputs.skip_scan != true }}
+        run: node src/scan/broken-links.js
+        continue-on-error: true
+        env:
+          NODE_ENV: production
+
+      # ====================================================================
+      #  PHASE 2 — ANALYZE
+      # ====================================================================
+      - name: "📊 ANALYZE – Ranking deltas"
+        id: analyze-ranking
+        if: ${{ inputs.skip_analyze != true }}
+        run: node src/analyze/ranking-delta.js
+        continue-on-error: true
+        env:
+          NODE_ENV: production
+
+      - name: "📊 ANALYZE – Content gaps"
+        id: analyze-content-gap
+        if: ${{ inputs.skip_analyze != true }}
+        run: node src/analyze/content-gap.js
+        continue-on-error: true
+        env:
+          NODE_ENV: production
+
+      - name: "📊 ANALYZE – Priority scoring"
+        id: analyze-priority
+        if: ${{ inputs.skip_analyze != true }}
+        run: node src/analyze/priority.js
+        continue-on-error: true
+        env:
+          NODE_ENV: production
+
+      # ====================================================================
+      #  PHASE 3 — OPTIMIZE
+      # ====================================================================
+      - name: "✏️ OPTIMIZE – Meta tag rewriter"
+        id: optimize-meta
+        if: ${{ inputs.skip_optimize != true }}
+        run: node src/optimize/meta-rewriter.js
+        continue-on-error: true
+        env:
+          NODE_ENV: production
+
+      - name: "✏️ OPTIMIZE – Internal linker"
+        id: optimize-linker
+        if: ${{ inputs.skip_optimize != true }}
+        run: node src/optimize/internal-linker.js
+        continue-on-error: true
+        env:
+          NODE_ENV: production
+
+      - name: "✏️ OPTIMIZE – Blog content generator"
+        id: optimize-blog
+        if: ${{ inputs.skip_optimize != true }}
+        run: node src/optimize/blog-generator.js
+        continue-on-error: true
+        env:
+          NODE_ENV: production
+
+      # ====================================================================
+      #  PHASE 4 — PUBLISH
+      # ====================================================================
+      - name: "🚀 PUBLISH – Deploy to Netlify"
+        id: publish-deploy
+        if: ${{ inputs.skip_publish != true }}
+        run: node src/publish/deploy-netlify.js
+        continue-on-error: true
+        env:
+          NODE_ENV: production
+
+      - name: "📝 PUBLISH – Generate report"
+        id: publish-report
+        if: ${{ inputs.skip_publish != true }}
+        run: node src/publish/report.js
+        continue-on-error: false    # report generation is critical for audit
+        env:
+          NODE_ENV: production
+
+      # ====================================================================
+      #  COMMIT generated files (reports, data snapshots, optimised content)
+      # ====================================================================
+      - name: "💾 Commit generated files back to repository"
+        id: commit
+        run: |
+          # Configure git committer identity (bot user)
+          git config user.name  "seo-automator[bot]"
+          git config user.email "seo-automator[bot]@users.noreply.github.com"
+
+          # Stage everything inside data/ and any top-level reports
+          git add -A data/ reports/ *.md 2>/dev/null || true
+
+          # Also stage the generated site content (if the optimizer wrote files)
+          if [ -d "public" ]; then
+            git add -A public/ 2>/dev/null || true
+          fi
+
+          # Only commit if there are changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "chore(seo): daily auto-optimization $(date -u '+%Y-%m-%d')
+
+            This commit was generated by the Daily SEO Auto-Optimization Loop.
+
+            Phases:
+              SCAN    – ${{ steps.scan-gsc.outcome }} / ${{ steps.scan-technical.outcome }} / ${{ steps.scan-broken-links.outcome }}
+              ANALYZE – ${{ steps.analyze-ranking.outcome }} / ${{ steps.analyze-content-gap.outcome }} / ${{ steps.analyze-priority.outcome }}
+              OPTIMIZE – ${{ steps.optimize-meta.outcome }} / ${{ steps.optimize-linker.outcome }} / ${{ steps.optimize-blog.outcome }}
+              PUBLISH  – ${{ steps.publish-deploy.outcome }} / ${{ steps.publish-report.outcome }}"
+
+            git push origin "${{ github.ref_name }}"
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # --------------------------------------------------------------------
+      #  Summary step – always runs, even when previous steps fail
+      # --------------------------------------------------------------------
+      - name: "📋 Pipeline summary"
+        if: always()
+        run: |
+          echo "============================================"
+          echo "  DAILY SEO LOOP — $(date -u '+%Y-%m-%d %H:%M UTC')"
+          echo "============================================"
+          echo ""
+          echo "  SCAN"
+          echo "    GSC data        : ${{ steps.scan-gsc.outcome }}"
+          echo "    Technical audit : ${{ steps.scan-technical.outcome }}"
+          echo "    Broken links    : ${{ steps.scan-broken-links.outcome }}"
+          echo ""
+          echo "  ANALYZE"
+          echo "    Ranking delta   : ${{ steps.analyze-ranking.outcome }}"
+          echo "    Content gap     : ${{ steps.analyze-content-gap.outcome }}"
+          echo "    Priority        : ${{ steps.analyze-priority.outcome }}"
+          echo ""
+          echo "  OPTIMIZE"
+          echo "    Meta rewriter   : ${{ steps.optimize-meta.outcome }}"
+          echo "    Internal linker : ${{ steps.optimize-linker.outcome }}"
+          echo "    Blog generator  : ${{ steps.optimize-blog.outcome }}"
+          echo ""
+          echo "  PUBLISH"
+          echo "    Netlify deploy  : ${{ steps.publish-deploy.outcome }}"
+          echo "    Report          : ${{ steps.publish-report.outcome }}"
+          echo ""
+          echo "  Commit            : ${{ steps.commit.outputs.committed }}"
+          echo "============================================"
