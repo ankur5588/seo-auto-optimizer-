@@ -67,10 +67,13 @@ jobs:
       GSC_SITE_URL_GTM: ${{ secrets.GSC_SITE_URL_GTM }}
       GSC_SITE_URL_VA:  ${{ secrets.GSC_SITE_URL_VA }}
 
-      # ── Netlify ────────────────────────────────────────────────────────
-      NETLIFY_AUTH_TOKEN:  ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      NETLIFY_SITE_ID_GTM: ${{ secrets.NETLIFY_SITE_ID_GTM }}
-      NETLIFY_SITE_ID_VA:  ${{ secrets.NETLIFY_SITE_ID_VA }}
+      # ── AWS S3 + CloudFront ────────────────────────────────────────────
+      AWS_ACCESS_KEY_ID:      ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      S3_BUCKET_GTM:          ${{ secrets.S3_BUCKET_GTM }}
+      S3_BUCKET_VA:           ${{ secrets.S3_BUCKET_VA }}
+      CLOUDFRONT_DIST_ID_GTM: ${{ secrets.CLOUDFRONT_DIST_ID_GTM }}
+      CLOUDFRONT_DIST_ID_VA:  ${{ secrets.CLOUDFRONT_DIST_ID_VA }}
 
       TZ: UTC
 
@@ -182,10 +185,10 @@ jobs:
       # ====================================================================
       #  PHASE 4 — PUBLISH
       # ====================================================================
-      - name: "🚀 PUBLISH – Deploy to Netlify"
+      - name: "🚀 PUBLISH – Deploy to AWS S3 + CloudFront"
         id: publish-deploy
         if: ${{ inputs.skip_publish != true }}
-        run: node src/publish/deploy-netlify.js
+        run: node src/publish/deploy-aws.js
         continue-on-error: true
         env:
           NODE_ENV: production
